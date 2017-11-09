@@ -1,0 +1,57 @@
+﻿@using inRiver.Remoting.Objects
+@using iPMC.HtmlTemplate.Intellisense.inRiver
+
+@model Entity
+
+@helper DisplayName(Entity entity)
+{
+    if (string.IsNullOrWhiteSpace(entity.DisplayName.Data.ToString()))
+    {
+        <span>(no name)</span>
+    }
+    else
+    {
+        <span>@entity.DisplayName.Data.ToString()</span>
+    }
+}
+
+<html inriver-razor-template="true">
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    @if (Model.InboundLinks.Count > 0)
+    {
+   <!--Loop through the 'Item' inbound relations-->
+        foreach (var parentLink in Model.InboundLinks)
+        {
+     <!--We're looking for entity 'Product'-->
+            if (parentLink.Source.EntityType.Id == "Product")
+            {
+       <!--Print 'Product' name and type attributes. Allow editing by adding the editor link-->
+                <h1>@TemplateHelper.FieldValue(parentLink.Source.Id, "ProdName") @TemplateHelper.FieldEditor(parentLink.Source, "ProdName")</h1>
+                <p>@TemplateHelper.FieldValue(parentLink.Source.Id, "ProductType") @TemplateHelper.FieldEditor(parentLink.Source, "ProductType")</p>
+
+       <!--Add the main image of 'Product'-->
+                <img src="@TemplateHelper.PictureUrl(parentLink.Source)" />
+            }
+        }
+    }
+    else
+    {
+        <p>No product found.</p>
+    }
+    @if (Model.OutboundLinks.Any())
+    {
+        <ul>
+            @foreach (var outbound in Model.OutboundLinks)
+            {
+                <li>
+                    @outbound.Target.Id
+                </li>
+            }
+        </ul>
+    }
+</body>
+</html>
